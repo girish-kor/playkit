@@ -1,4 +1,4 @@
-# GAME UI COMPONENTS LIBRARY
+# Play Kit LIBRARY
 
 **Main Aim:** Provide a reusable, accessible, PlayCanvas-integrated React
 component library for building in-game UI (HUD, inventory, dialogue,

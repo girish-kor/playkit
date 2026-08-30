@@ -1,4 +1,4 @@
-# Game UI Components
+# Play Kit
 
 A reusable, accessible, PlayCanvas-integrated React component library for building in-game UI — HUD, inventory, dialogue, puzzles, settings, dev tools — with consistent Tailwind styling, keyboard/screen-reader support, and bidirectional PlayCanvas scene sync across both DevMode and PlayMode. (Purpose statement verbatim from `COMPONENTS.md`.)
 

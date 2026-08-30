@@ -45,7 +45,7 @@ if (leaked.length > 0) {
   console.error(
     `verify-devtools-excluded: FAILED. The following Debug/DevTools components are reachable ` +
       `from dist/index.js: ${leaked.join(', ')}. They must only be exported from ` +
-      `'game-ui-components/devtools' (dist/devtools.js), never from the main entry point ` +
+      `'playkit/devtools' (dist/devtools.js), never from the main entry point ` +
       `(docs/BUILD.md, docs/LOGGING.md).`,
   );
   process.exit(1);

@@ -1,7 +1,7 @@
 // Package entry point. Re-exports every component and hook per docs/FOLDER-STRUCTURE.md,
 // EXCEPT the Debug/DevTools category, which must never be reachable from the production
 // entry point (docs/BUILD.md, docs/LOGGING.md). Import those explicitly from
-// 'game-ui-components/devtools' in development-only code.
+// 'playkit/devtools' in development-only code.
 
 export * from './components/primitives';
 export * from './components/hud';

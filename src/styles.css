@@ -10,7 +10,7 @@
  * excludes node_modules by default), e.g. in the consumer's own CSS entry:
  *
  *   @import "tailwindcss";
- *   @source "../node_modules/game-ui-components/dist";
+ *   @source "../node_modules/playkit/dist";
  *
  * See docs/BUILD.md requirement #2 (the CSS pipeline must not purge dynamically
  * generated classes it cannot statically detect).

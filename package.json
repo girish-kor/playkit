@@ -1,5 +1,5 @@
 {
-  "name": "game-ui-components",
+  "name": "playkit",
   "version": "0.1.0",
   "description": "A reusable, accessible, PlayCanvas-integrated React component library for building in-game UI.",
   "type": "module",

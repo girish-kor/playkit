@@ -18,7 +18,7 @@ The only environment-variable dependency documented anywhere in `COMPONENTS.md` 
 - **Package manager**: npm (see `package.json`'s `engines.node: ">=20"`; no other package
   manager is mandated). Node.js **>=20** required; `.nvmrc` pins `20` for local version
   managers (nvm/fnm/volta-style tooling).
-- **`package.json`**: exists, `name: "game-ui-components"`, `version: "0.1.0"` per
+- **`package.json`**: exists, `name: "playkit"`, `version: "0.1.0"` per
   `docs/VERSIONING.md`. `react`/`react-dom` are `peerDependencies` (`>=18`), not bundled
   — this is a component library, the consuming app supplies React. `react-router-dom` is
   an optional peer, matching its optional-dependency status in `docs/DEPENDENCIES.md`.

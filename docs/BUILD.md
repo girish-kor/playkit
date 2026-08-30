@@ -23,7 +23,7 @@ Derived from verified content elsewhere in this doc set, not invented:
    `node_modules` from its automatic content detection by default):
    ```css
    @import "tailwindcss";
-   @source "../node_modules/game-ui-components/dist";
+   @source "../node_modules/playkit/dist";
    ```
    Once real component implementations land, every prop→class mapping must go through a
    literal lookup (an object/switch keyed by the enum value), never a template-string
