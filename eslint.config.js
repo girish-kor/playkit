@@ -49,6 +49,14 @@ export default tseslint.config(
       // avoidable case still gets flagged for review.
       'react-hooks/set-state-in-effect': 'warn',
 
+      // Several puzzle components (docs/COMPONENTS.md's Puzzle category) shuffle their
+      // board/tiles/pairs exactly once per instance via a lazy `useState(() => ...)`
+      // or `useMemo` initializer (e.g. MemoryMatch's pair shuffle, SliderPuzzle's
+      // scramble) -- a standard, safe React pattern the rule can't distinguish from
+      // calling Math.random()/Date.now() on every render, which would be a real bug.
+      // Kept as a warning so a genuinely-every-render impurity is still flagged.
+      'react-hooks/purity': 'warn',
+
       // Class assembly must go through clsx + tailwind-merge, never raw concatenation
       // (docs/DESIGN-SYSTEM.md) -- caught in review, not lint, but keep template-string
       // className concatenation visible as a warning.
