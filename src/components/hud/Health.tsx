@@ -163,14 +163,14 @@ export function Health({
         showValue={false}
         aria-label={ariaLabel ?? 'Health'}
       />
-      <div
-        role="progressbar"
-        aria-valuenow={currentValue}
-        aria-valuemin={0}
-        aria-valuemax={maxValue}
-        aria-live={isCritical ? 'assertive' : 'polite'}
-        className="sr-only"
-      >
+      {/* Progress above already carries the single role="progressbar" landmark
+          (COMPONENTS.md's Progress accessibility contract); this is a supplementary
+          sr-only *announcement* region, not a second progressbar, so it takes
+          role="status" rather than duplicating role="progressbar" with the same
+          value -- doing the latter would give assistive tech two progressbar
+          landmarks reporting the same number (see the fix applied to Avatar for the
+          same class of bug). */}
+      <div role="status" aria-live={isCritical ? 'assertive' : 'polite'} className="sr-only">
         {ariaLabel ?? 'Health'}: {currentValue} of {maxValue}
       </div>
       {(showText || showIcon) && (

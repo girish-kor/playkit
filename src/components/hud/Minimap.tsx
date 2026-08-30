@@ -126,7 +126,12 @@ export function Minimap({
           ⤢
         </Button>
       )}
-      <div className="sr-only" aria-hidden="true">
+      {/* sr-only means "visible to screen readers, hidden visually" -- pairing it with
+          aria-hidden="true" would remove this whole control from the accessibility
+          tree too, leaving an invisible, keyboard-and-screen-reader-unreachable
+          button that only a sighted mouse user could ever trigger (and even then
+          couldn't see). Drop aria-hidden so these stay reachable. */}
+      <div className="sr-only">
         <button type="button" onClick={() => changeZoom(zoom * 1.1)}>
           Zoom in
         </button>
