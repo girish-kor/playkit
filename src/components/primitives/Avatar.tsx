@@ -94,8 +94,11 @@ export function Avatar({
         className,
       )}
       style={sizeStyle}
-      role={onClick ? undefined : 'img'}
-      aria-label={alt}
+      // When an actual <img> renders inside, it already carries role="img" and `alt`
+      // as its accessible name -- wrapping it in a second role="img" node with the
+      // same label would double up the same accessible object for assistive tech.
+      role={onClick || showImage ? undefined : 'img'}
+      aria-label={showImage ? undefined : alt}
       onClick={onClick}
     >
       {showImage ? (
