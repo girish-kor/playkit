@@ -1,6 +1,6 @@
 # Dependencies
 
-Every external package named in a component's or hook's "Dependencies" field in `COMPONENTS.md`, consolidated. No `package.json` exists in this repository — the version pins below are the only ones stated anywhere in the source spec; every other package is named without a version.
+Every external package named in a component's or hook's "Dependencies" field in `COMPONENTS.md`, consolidated. `package.json` now exists (see "Version pin summary" below for the actual pinned versions); `@use-gesture/react` and `react-use` are the only two packages `COMPONENTS.md` itself constrains to a version range — every other pin below was chosen at scaffold time, not mandated by the spec.
 
 ## Core (used by nearly every component)
 
@@ -59,4 +59,62 @@ Every external package named in a component's or hook's "Dependencies" field in 
 
 ## Version pin summary
 
-Only two packages carry an explicit version constraint anywhere in `COMPONENTS.md`: `@use-gesture/react@^10` and `react-use@^17`. Every other package listed above has no stated version — pin an exact version when the actual `package.json` for this repository is created, and record it here.
+`package.json` now exists; every dependency below is pinned to the latest version
+available on the npm registry at scaffold time (checked directly against the registry,
+not assumed). `@use-gesture/react` and `react-use` still carry the two version
+constraints `COMPONENTS.md` itself specifies (`^10`, `^17`); every other package's pin
+is a new record, not something `COMPONENTS.md` mandated a specific version for.
+
+| Package | Pinned | Notes |
+|---|---|---|
+| `react`, `react-dom` | `>=18` (peerDependencies) | Not bundled — consumer-supplied, per `docs/ARCHITECTURE.md`. |
+| `react-router-dom` | `>=6` (optional peerDependency) | Matches its optional/consumer-wired status (docs/DEPENDENCIES.md § Routing). |
+| `tailwind-merge` | `^3.6.0` | |
+| `clsx` | `^2.1.1` | |
+| `@radix-ui/react-slot` | `^1.3.3` | |
+| `@radix-ui/react-checkbox` | `^1.3.11` | |
+| `@radix-ui/react-radio-group` | `^1.4.7` | |
+| `@radix-ui/react-tabs` | `^1.1.21` | |
+| `@radix-ui/react-accordion` | `^1.2.20` | |
+| `@radix-ui/react-popover` | `^1.1.23` | |
+| `@radix-ui/react-tooltip` | `^1.2.16` | |
+| `@radix-ui/react-dialog` | `^1.1.23` | |
+| `@radix-ui/react-context-menu` | `^2.3.7` | |
+| `@radix-ui/react-hover-card` | `^1.1.23` | |
+| `@radix-ui/react-dropdown-menu` | `^2.1.24` | |
+| `@radix-ui/react-switch` | `^1.3.7` | |
+| `@radix-ui/react-slider` | `^1.4.7` | |
+| `@radix-ui/react-select` | `^2.3.7` | |
+| `@radix-ui/react-focus-trap` | **not pinned — does not exist on the npm registry** (verified: `npm view @radix-ui/react-focus-trap` returns 404). See "Unresolvable dependency" below; not added to `package.json`. |
+| `react-aria` | `^3.51.0` | `useButton`, `useMenu` only (`docs/API.md`). |
+| `@dnd-kit/core` | `^6.3.1` | |
+| `@use-gesture/react` | `^10.3.1` | Matches `COMPONENTS.md`'s own `^10` pin. |
+| `lucide-react` | `^1.37.0` | |
+| `canvas-confetti` | `^1.9.4` (+ `@types/canvas-confetti ^1.9.0` dev dep) | |
+| `zustand` | `^5.0.15` | Scoped to `Puzzle`, `Settings`, `PCProvider` only — see `docs/STATE-MANAGEMENT.md`. |
+| `react-use` | `^17.6.1` | Matches `COMPONENTS.md`'s own `^17` pin. |
+| `playcanvas` | `^2.21.4` (devDependency only, for local type-checking/testing against a real `pc.*` surface) | Not a runtime dependency of the package itself — the consumer supplies the PlayCanvas app instance via `PCProvider`, per `docs/ARCHITECTURE.md`. |
+
+Build/test/lint tooling (not part of `COMPONENTS.md`'s dependency set, but required to
+build/verify it — see `docs/BUILD.md`, `docs/CI-CD.md`): `typescript`, `tsup`, `vitest`
++ `@vitejs/plugin-react` + `jsdom`, `@testing-library/react`/`jest-dom`/`user-event`,
+`eslint` (pinned to the 9.x line — `eslint-plugin-jsx-a11y` and `eslint-plugin-react`
+had not yet released support for ESLint 10 at scaffold time) with `typescript-eslint`,
+`eslint-plugin-react`/`react-hooks`/`jsx-a11y`, `eslint-config-prettier`, `prettier`,
+`tailwindcss` v4 + `@tailwindcss/postcss`. Exact versions are in `package.json`.
+
+## Unresolvable dependency: `@radix-ui/react-focus-trap`
+
+`COMPONENTS.md` names `@radix-ui/react-focus-trap` as a dependency of `Dialogue`,
+`Modal`, and `FocusTrap`. That package does not exist on the npm registry — Radix UI's
+focus-trapping behavior ships internally inside `@radix-ui/react-dialog`/`react-popover`
+(via `@radix-ui/react-focus-scope` and `@radix-ui/react-focus-guards`, neither of which
+is documented as a direct dependency anywhere in `COMPONENTS.md`), not as a standalone
+consumable package under that name. This is preserved here as a documented discrepancy
+rather than silently substituted with a different package — per this repository's own
+convention of recording rather than "fixing" a spec inconsistency without a spec update
+(see `docs/API.md`'s `useSequenceSubmit`/`usePuzzleSubmit` naming-inconsistency note for
+the same convention applied elsewhere). Resolving it (either `COMPONENTS.md` names the
+correct package, or `FocusTrap`/`Modal`/`Dialogue` are implemented directly on
+`@radix-ui/react-focus-scope`) is a decision for whoever implements those three
+components, not something to guess here.

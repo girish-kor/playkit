@@ -1,6 +1,6 @@
 # Deployment
 
-No deployment target, package registry, or release pipeline exists for this repository as of this writing. This is a component library, not a deployable application — its "deployment" is publishing a versioned package for consumption by game projects that embed it alongside their own PlayCanvas application, not deploying a running service.
+No package registry or release/publish pipeline exists for this repository yet. This is a component library, not a deployable application — its "deployment" is publishing a versioned package for consumption by game projects that embed it alongside their own PlayCanvas application, not deploying a running service. `npm run build` now produces that package artifact locally (`dist/`, per `docs/BUILD.md`); no step publishes it anywhere.
 
 ## What deployment means for this project
 
@@ -9,7 +9,7 @@ Per `docs/ARCHITECTURE.md`, this library has no server and no backend (see `docs
 ## Requirements a release must satisfy (derived, not invented)
 
 1. Follow the versioning policy in `docs/VERSIONING.md` before any release.
-2. Exclude Debug/DevTools-category components from what ships (`docs/BUILD.md`, `docs/LOGGING.md`).
+2. Exclude Debug/DevTools-category components from what ships (`docs/BUILD.md`, `docs/LOGGING.md`) — mechanically checked by `npm run verify:devtools-excluded` against the built artifact.
 3. Match the change entry recorded in `docs/CHANGELOG.md` for that version.
 
 ## Not yet established

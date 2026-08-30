@@ -1,0 +1,18 @@
+/**
+ * Reference stylesheet for LOCAL development/testing of this library only (e.g. a
+ * future demo harness or visual test runner). This is deliberately NOT part of the
+ * package's build output or `exports` map.
+ *
+ * Per docs/DESIGN-SYSTEM.md, this library ships Tailwind utility CLASS NAMES as JS
+ * strings, not compiled CSS -- a consuming application's own Tailwind build is what
+ * actually generates the CSS. A consumer must ensure this package's built output is
+ * included in their content/source scanning (Tailwind v4 auto-detects source files but
+ * excludes node_modules by default), e.g. in the consumer's own CSS entry:
+ *
+ *   @import "tailwindcss";
+ *   @source "../node_modules/game-ui-components/dist";
+ *
+ * See docs/BUILD.md requirement #2 (the CSS pipeline must not purge dynamically
+ * generated classes it cannot statically detect).
+ */
+@import 'tailwindcss';

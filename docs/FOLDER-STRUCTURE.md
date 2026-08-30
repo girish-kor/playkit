@@ -1,6 +1,6 @@
 # Folder Structure
 
-Source of truth: `COMPONENTS.md` category taxonomy (Index, and `## Category:` headings). The repository currently contains only `COMPONENTS.md` and `docs/*.md`; no `src/` tree exists yet. The structure below is the required layout for implementation — one directory per category, one file per component/hook, matching the taxonomy exactly.
+Source of truth: `COMPONENTS.md` category taxonomy (Index, and `## Category:` headings). The `src/` tree below now exists as of the base scaffold, one directory per category and one file per component/hook, matching the taxonomy exactly — but every component/hook file is currently a stub that throws "not implemented yet" (see `docs/REBUILD-GUIDE.md` for the real implementation order, and each stub file's own comment for the exact spec section to implement it from).
 
 ## Required top-level layout
 
@@ -28,7 +28,9 @@ Source of truth: `COMPONENTS.md` category taxonomy (Index, and `## Category:` he
     - `general/` — Stepper, Rating, Tag
     - `playcanvas-bridge/` — PCProvider
   - `hooks/` — one file per hook listed in `COMPONENTS.md` under Hooks Documentation (`useEntity`, `useScript`, `useEvent`, `useSync`, `useTransition`, `useInput`, `useNetwork`, `useTimer`, `useTimerSync`, `useStopwatch`, `useStopwatchSync`, `useToast`, `useAnnounce`, `useScrollToBottom`, `useAnimation`, `useLoadingProgress`, `usePuzzleBridge`, `usePuzzleSubmit`, `useSettingSync`, `useSettingsSync`, `useKeybindSync`, `useObjectiveSync`, `useObjectiveProgress`, `useDialogueSync`, `useDialogueChoice`, `useDialogueHistory`, `useInventorySync`, `useSlotSync`, `useHealthSync`, `useEnergySync`, `useLoadingSync`, `useProgressSync`, `useTouchBridge`, `useRaycaster`, `usePlayerRotation`, `useCameraProjection`, `useTextSync`, `useIconSync`, `useTextureSync`, `useAction`, `useItemData`, `useHoverData`, `useDevAPI`, `useSceneInspector`, `usePropertyEditor`, `useEditorBridge`, `usePrefabLibrary`, `useConsoleBridge`, `useErrorReporter`, `useConfirm`, `useModalSync`, `useNotificationListener`, `useA11ySync`, `useViewportSync`, `useIsTouchDevice`, `useKeyboardListener`, `useTypewriter`, `useSequenceSubmit`, `useSliderSync`, `useObjectPuzzleSync`, `useTooltipSync`, `useContextMenu`, `useSkeleton`, `useViewport`, `useBadgeSync`, `useAvatarSync`, `useAccordionSync`, `useMinimapSync`, `useAmmoSync`, `useInteractionPromptSync`, `useStatusEffectSync`, `useEquipmentSync`, `useCraftingSync`, `useLootSync`, `useStepperSync`); react-aria's `useMenu`/`useButton` are re-exported, not implemented here.
-  - `index` (package entry point) — re-exports every component and hook.
+  - `index.ts` (package entry point, `"."` export) — re-exports every component and hook EXCEPT the `devtools` category (see `docs/BUILD.md` requirement #3).
+  - `devtools.ts` (`"./devtools"` export) — re-exports only the `devtools` category; the sole supported way to reach `DevTools`/`Inspector`/`Property`/`Console`/`PerformanceMonitor`/`AssetViewer`.
+  - `types.ts` — the shared inline type shapes from `docs/DATA-MODELS.md` (`Item<T>`, `TreeNode<T>`, etc.), not tied to any one category.
 
 ## Rules
 

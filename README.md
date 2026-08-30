@@ -4,7 +4,15 @@ A reusable, accessible, PlayCanvas-integrated React component library for buildi
 
 ## Status
 
-Specification-only. This repository currently contains the full component/hook specification (`COMPONENTS.md`) and its complete supporting documentation set (`docs/`); no source implementation, build tooling, or CI exists yet (see `docs/ENVIRONMENT.md`, `docs/BUILD.md`, `docs/CI-CD.md`).
+Scaffold stage. `COMPONENTS.md` (the specification) and its full `docs/` set are complete. The base project setup now exists on top of that spec — `package.json`, TypeScript, the `tsup` build, `vitest`/`eslint`/`prettier`, and the complete `src/` folder structure from `docs/FOLDER-STRUCTURE.md` (one file per component/hook, in the right category, matching the taxonomy exactly). **No component or hook behavior is implemented yet** — every file in `src/components/` and `src/hooks/` is a stub that throws `"<Name> is not implemented yet"`, so the export surface, types, and build/test/lint pipeline can all be verified before real implementation work starts. No CI *workflow file* has been added (see `docs/CI-CD.md`), though every gate it needs to run is now a working npm script.
+
+```sh
+npm install
+npm run ci        # typecheck, lint, format:check, test, build, verify:devtools-excluded
+```
+
+See `docs/ENVIRONMENT.md`, `docs/BUILD.md`, `docs/CI-CD.md`, and `docs/DEPENDENCIES.md`
+for exactly what was established and why each tooling choice was made.
 
 ## Contents
 

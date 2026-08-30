@@ -1,0 +1,24 @@
+import * as React from 'react';
+
+/**
+ * Scaffold stub — not yet implemented.
+ *
+ * Authoritative contract: `COMPONENTS.md` § `## Component: LootContainer` (category: Inventory).
+ * Before implementing, read (in this order): `docs/REBUILD-GUIDE.md`, `COMPONENTS.md`'s
+ * full entry for LootContainer, then `docs/CODING-STANDARDS.md`. Do not invent props/events/
+ * defaults here — every field must come from the LootContainer entry in `COMPONENTS.md`.
+ */
+export interface LootContainerProps {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export const LootContainer = React.forwardRef<HTMLElement, LootContainerProps>(
+  function LootContainer(_props, _ref) {
+    throw new Error(
+      'LootContainer is not implemented yet. See COMPONENTS.md § Component: LootContainer, and src/components/inventory/LootContainer.tsx.',
+    );
+  },
+);
+
+LootContainer.displayName = 'LootContainer';
