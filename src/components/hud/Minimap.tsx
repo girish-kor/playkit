@@ -1,22 +1,141 @@
 import * as React from 'react';
 
+import { useMinimapSync } from '../../hooks/useMinimapSync';
+import { cn } from '../../internal/cn';
+import { Box } from '../primitives/Box';
+import { Button } from '../primitives/Button';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Authoritative contract: `COMPONENTS.md` § `## Component: Minimap` (category: HUD).
- * Before implementing, read (in this order): `docs/REBUILD-GUIDE.md`, `COMPONENTS.md`'s
- * full entry for Minimap, then `docs/CODING-STANDARDS.md`. Do not invent props/events/
- * defaults here — every field must come from the Minimap entry in `COMPONENTS.md`.
+ * 2D overhead view of the player's surroundings, distinct from `Compass`
+ * (COMPONENTS.md § Component: Minimap).
  */
-export interface MinimapProps {
-  className?: string;
-  children?: React.ReactNode;
+export type MinimapVariant = 'corner' | 'fullscreen' | 'minimal';
+
+export interface MinimapMarker {
+  id: string;
+  label?: string;
+  position: { x: number; y: number; z: number };
+  icon?: React.ReactNode;
+  color?: string;
 }
 
-export const Minimap = React.forwardRef<HTMLElement, MinimapProps>(function Minimap(_props, _ref) {
-  throw new Error(
-    'Minimap is not implemented yet. See COMPONENTS.md § Component: Minimap, and src/components/hud/Minimap.tsx.',
+export interface MinimapProps {
+  pcEntity?: string;
+  pcCamera?: string;
+  markers?: MinimapMarker[];
+  zoom?: number;
+  rotateWithPlayer?: boolean;
+  shape?: 'square' | 'circle';
+  size?: number;
+  variant?: MinimapVariant;
+  className?: string;
+  onMarkerClick?: (id: string) => void;
+  onMarkerHover?: (id: string | null) => void;
+  onZoomChange?: (zoom: number) => void;
+  onToggleFullscreen?: () => void;
+  'aria-label'?: string;
+  showPlayerHeading?: boolean;
+  fogOfWar?: boolean;
+}
+
+export function Minimap({
+  pcEntity,
+  pcCamera,
+  markers = [],
+  zoom: zoomProp = 1,
+  shape = 'circle',
+  size = 160,
+  variant = 'corner',
+  className,
+  onMarkerClick,
+  onMarkerHover,
+  onZoomChange,
+  onToggleFullscreen,
+  'aria-label': ariaLabel = 'Minimap',
+  showPlayerHeading = true,
+}: MinimapProps): React.JSX.Element {
+  const { textureUrl, projectMarker } = useMinimapSync({ pcCamera, pcEntity });
+  const [zoom, setZoom] = React.useState(zoomProp);
+  const [isFullscreen, setIsFullscreen] = React.useState(variant === 'fullscreen');
+
+  React.useEffect(() => setZoom(zoomProp), [zoomProp]);
+
+  const changeZoom = (next: number) => {
+    setZoom(next);
+    onZoomChange?.(next);
+  };
+
+  const toggleFullscreen = () => {
+    setIsFullscreen((prev) => !prev);
+    onToggleFullscreen?.();
+  };
+
+  const displaySize = isFullscreen
+    ? Math.min(typeof window !== 'undefined' ? window.innerWidth * 0.8 : 480, 480)
+    : size;
+
+  return (
+    <Box
+      role="img"
+      aria-label={ariaLabel}
+      className={cn(
+        'relative overflow-hidden bg-black/60 border-2 border-gray-700',
+        shape === 'circle' ? 'rounded-full' : 'rounded-lg',
+        className,
+      )}
+      style={{
+        width: displaySize,
+        height: displaySize,
+        backgroundImage: textureUrl ? `url(${textureUrl})` : undefined,
+        backgroundSize: `${100 * zoom}%`,
+      }}
+    >
+      {variant !== 'minimal' &&
+        markers.map((marker) => {
+          const screenPos = projectMarker(marker.position);
+          return (
+            <button
+              key={marker.id}
+              type="button"
+              aria-label={marker.label}
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: `${50 + screenPos.x * zoom}%`,
+                top: `${50 + screenPos.y * zoom}%`,
+                color: marker.color,
+              }}
+              onClick={() => onMarkerClick?.(marker.id)}
+              onMouseEnter={() => onMarkerHover?.(marker.id)}
+              onMouseLeave={() => onMarkerHover?.(null)}
+            >
+              {marker.icon ?? '•'}
+            </button>
+          );
+        })}
+      {showPlayerHeading && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-400" />
+      )}
+      {variant === 'corner' && (
+        <Button
+          variant="icon-only"
+          size="sm"
+          aria-label="Expand minimap"
+          className="absolute bottom-1 right-1"
+          onPress={toggleFullscreen}
+        >
+          ⤢
+        </Button>
+      )}
+      <div className="sr-only" aria-hidden="true">
+        <button type="button" onClick={() => changeZoom(zoom * 1.1)}>
+          Zoom in
+        </button>
+        <button type="button" onClick={() => changeZoom(zoom / 1.1)}>
+          Zoom out
+        </button>
+      </div>
+    </Box>
   );
-});
+}
 
 Minimap.displayName = 'Minimap';
