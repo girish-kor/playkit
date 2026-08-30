@@ -1,5 +1,5 @@
 import { act } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { renderHookWithPC } from '../../test/renderWithPC';
 import { useLoadingProgress } from '../useLoadingProgress';
