@@ -123,7 +123,11 @@ export function useNetwork(options: UseNetworkOptions): UseNetworkResult {
           return;
         }
         if (parsed?.type === 'player-leave') {
-          setPlayers((prev) => prev.filter((p) => p !== parsed.player));
+          // Each message round-trips through JSON independently, so the leaving
+          // player's object is never reference-equal to the one stored from its
+          // join message -- compare by serialized value instead of identity.
+          const leavingKey = JSON.stringify(parsed.player);
+          setPlayers((prev) => prev.filter((p) => JSON.stringify(p) !== leavingKey));
           onPlayerLeaveRef.current?.(parsed.player);
           return;
         }
