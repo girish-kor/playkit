@@ -32,12 +32,11 @@ function computeProgress(assets: any[]): number {
 export function useLoadingProgress(options: UseLoadingProgressOptions): UseLoadingProgressResult {
   const { pcApp, manifest } = options;
 
-  const [progress, setProgress] = React.useState(0);
+  const [progress, setProgress] = React.useState<number>(() => (options.pcApp?.assets ? 0 : 1));
   const [error, setError] = React.useState<Error | null>(null);
 
   React.useEffect(() => {
     if (!pcApp?.assets) {
-      setProgress(1);
       return;
     }
 

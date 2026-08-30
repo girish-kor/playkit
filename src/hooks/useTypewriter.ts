@@ -22,13 +22,17 @@ export function useTypewriter(options: UseTypewriterOptions): {
   // `autoStart`-conditional initial count here would only ever survive a single paint
   // before that effect overwrote it back to 0 anyway (a visible full-text-then-blank
   // flash for `autoStart: false`). `running` alone reflects `autoStart`.
+  const [prevText, setPrevText] = React.useState(text);
+  const [prevAutoStart, setPrevAutoStart] = React.useState(autoStart);
   const [displayedCount, setDisplayedCount] = React.useState(0);
   const [running, setRunning] = React.useState(autoStart);
 
-  React.useEffect(() => {
+  if (text !== prevText || autoStart !== prevAutoStart) {
+    setPrevText(text);
+    setPrevAutoStart(autoStart);
     setDisplayedCount(0);
     setRunning(autoStart);
-  }, [text, autoStart]);
+  }
 
   React.useEffect(() => {
     if (!running || displayedCount >= text.length) return;

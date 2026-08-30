@@ -47,7 +47,6 @@ export function useScript(options: UseScriptOptions): UseScriptResult {
   const debounceTimer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   React.useEffect(() => {
-    setIsLoading(true);
     return pollUntilResolved(
       () => {
         const entity = resolveEntity(app, scene, entityId);

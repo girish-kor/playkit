@@ -61,6 +61,7 @@ export function useEntity(options: UseEntityOptions): UseEntityResult {
   // Resolve (and keep re-resolving until found) whenever the target id or the
   // app/scene identity changes.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEntity(resolveEntity(app, scene, entityId));
     return pollUntilResolved(
       () => resolveEntity(app, scene, entityId),
@@ -72,6 +73,7 @@ export function useEntity(options: UseEntityOptions): UseEntityResult {
   // resolved.
   React.useEffect(() => {
     if (!entity) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsEnabled(Boolean(entity.enabled));
     const unsubscribeEnabled = subscribeEnabledChange(entity, (next) => {
       setIsEnabled(next);

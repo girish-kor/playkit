@@ -87,6 +87,7 @@ export function useInput(options: UseInputOptions): UseInputResult {
   React.useEffect(() => {
     if (inputType === 'keyboard') {
       const keyboard = app?.keyboard;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsSupported(Boolean(keyboard) || typeof window !== 'undefined');
       if (!key) return;
       const down = (e: KeyboardEvent | { key?: string }) => {
