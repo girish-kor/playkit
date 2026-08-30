@@ -1,13 +1,24 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useStopwatchSync() => {elapsed, laps, setElapsed} — used by Stopwatch`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useStopwatchSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useStopwatchSync is not implemented yet. See docs/API.md § useStopwatchSync.');
+import { useScript } from './useScript';
+
+/** Scene-bound stopwatch sync (docs/API.md § useStopwatchSync) — used by `Stopwatch`. */
+export function useStopwatchSync(options: { pcEntity?: string } = {}): {
+  elapsed: number;
+  laps: number[];
+  setElapsed: (t: number) => void;
+} {
+  const elapsed = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'stopwatchElapsed',
+    initialValue: 0,
+  });
+  const laps = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'stopwatchLaps',
+    initialValue: [] as number[],
+  });
+  return {
+    elapsed: (elapsed.value as number | undefined) ?? 0,
+    laps: (laps.value as number[] | undefined) ?? [],
+    setElapsed: (t) => elapsed.setValue(t),
+  };
 }

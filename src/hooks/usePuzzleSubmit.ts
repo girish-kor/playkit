@@ -1,13 +1,25 @@
+import * as React from 'react';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `usePuzzleSubmit() => {submit, isValid} — used by CodePuzzle, MathPuzzle, WordPuzzle, MemoryMatch, CombinationLock, PatternLock`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Shared submit/validate hook (docs/API.md § usePuzzleSubmit) — used by `CodePuzzle`,
+ * `MathPuzzle`, `WordPuzzle`, `MemoryMatch`, `CombinationLock`, `PatternLock`. Every
+ * puzzle type except `SequencePuzzle` shares this one hook (see `useSequenceSubmit`'s
+ * own doc comment for the preserved naming inconsistency).
  */
-export function usePuzzleSubmit(_options?: Record<string, unknown>): unknown {
-  throw new Error('usePuzzleSubmit is not implemented yet. See docs/API.md § usePuzzleSubmit.');
+export function usePuzzleSubmit<T = unknown>(): {
+  submit: (value: T, validate: (value: T) => boolean | Promise<boolean>) => Promise<boolean>;
+  isValid: boolean | null;
+} {
+  const [isValid, setIsValid] = React.useState<boolean | null>(null);
+
+  const submit = React.useCallback(
+    async (value: T, validate: (value: T) => boolean | Promise<boolean>) => {
+      const result = await validate(value);
+      setIsValid(result);
+      return result;
+    },
+    [],
+  );
+
+  return { submit, isValid };
 }

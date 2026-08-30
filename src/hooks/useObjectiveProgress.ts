@@ -1,15 +1,19 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useObjectiveProgress({objectiveId, pcEntity?}) => {progress, setProgress, complete} — used by Objective`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useObjectiveProgress(_options?: Record<string, unknown>): unknown {
-  throw new Error(
-    'useObjectiveProgress is not implemented yet. See docs/API.md § useObjectiveProgress.',
-  );
+import { useScript } from './useScript';
+
+/** Single-objective progress sync (docs/API.md § useObjectiveProgress) — used by `Objective`. */
+export function useObjectiveProgress(options: { objectiveId: string; pcEntity?: string }): {
+  progress: number;
+  setProgress: (value: number) => void;
+  complete: () => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: `objectiveProgress.${options.objectiveId}`,
+    initialValue: 0,
+  });
+  return {
+    progress: (value as number | undefined) ?? 0,
+    setProgress: (v) => setValue(v),
+    complete: () => setValue(1),
+  };
 }

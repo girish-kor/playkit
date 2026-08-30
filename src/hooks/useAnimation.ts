@@ -1,13 +1,46 @@
+import * as React from 'react';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useAnimation({from, to, duration, easing?}) => {value, isAnimating} — requestAnimationFrame-driven tweening`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * requestAnimationFrame-driven tweening (docs/API.md § useAnimation). Frame-driven,
+ * not time-guaranteed — under sustained frame drops the visual duration can stretch
+ * beyond `duration` (docs/PERFORMANCE.md's documented caveat on `Health`/`Energy`).
  */
-export function useAnimation(_options?: Record<string, unknown>): unknown {
-  throw new Error('useAnimation is not implemented yet. See docs/API.md § useAnimation.');
+export interface UseAnimationOptions {
+  from: number;
+  to: number;
+  duration: number;
+  easing?: (t: number) => number;
+}
+
+const linear = (t: number) => t;
+
+export function useAnimation(options: UseAnimationOptions): {
+  value: number;
+  isAnimating: boolean;
+} {
+  const { from, to, duration, easing = linear } = options;
+  const [value, setValue] = React.useState(from);
+  const [isAnimating, setIsAnimating] = React.useState(false);
+
+  React.useEffect(() => {
+    let rafId: number;
+    const start = performance.now();
+    setIsAnimating(true);
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(1, duration <= 0 ? 1 : elapsed / duration);
+      setValue(from + (to - from) * easing(t));
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        setIsAnimating(false);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [from, to, duration, easing]);
+
+  return { value, isAnimating };
 }

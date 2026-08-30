@@ -1,13 +1,17 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useItemData({itemId, pcEntity?}) => {item, loading} — used by ItemTip, ItemComparison`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useItemData(_options?: Record<string, unknown>): unknown {
-  throw new Error('useItemData is not implemented yet. See docs/API.md § useItemData.');
+import { useScript } from './useScript';
+import type { Item } from '../types';
+
+/** Resolves item data by id from PlayCanvas (docs/API.md § useItemData) — used by `ItemTip`, `ItemComparison`. */
+export function useItemData<T = unknown>(options: {
+  itemId: string;
+  pcEntity?: string;
+}): {
+  item: Item<T> | undefined;
+  loading: boolean;
+} {
+  const { value, isLoading } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: `itemData.${options.itemId}`,
+  });
+  return { item: value as Item<T> | undefined, loading: options.pcEntity ? isLoading : false };
 }

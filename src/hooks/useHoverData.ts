@@ -1,13 +1,15 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useHoverData({pcEntity?}) => {data, loading} — used by HoverCard`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useHoverData(_options?: Record<string, unknown>): unknown {
-  throw new Error('useHoverData is not implemented yet. See docs/API.md § useHoverData.');
+import { useScript } from './useScript';
+
+/** Resolves scene-sourced hover-card data (docs/API.md § useHoverData) — used by `HoverCard`. */
+export function useHoverData<T = unknown>(
+  options: { pcEntity?: string } = {},
+): {
+  data: T | undefined;
+  loading: boolean;
+} {
+  const { value, isLoading } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'hoverData',
+  });
+  return { data: value as T | undefined, loading: options.pcEntity ? isLoading : false };
 }

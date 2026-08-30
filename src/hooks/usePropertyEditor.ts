@@ -1,13 +1,16 @@
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `usePropertyEditor({entity}) => {get(key), set(key, value)} — shared by Property and LightingControls`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Generic entity-property get/set (docs/API.md § usePropertyEditor) — shared by
+ * `Property` and `LightingControls` (the same hook, reused unmodified).
  */
-export function usePropertyEditor(_options?: Record<string, unknown>): unknown {
-  throw new Error('usePropertyEditor is not implemented yet. See docs/API.md § usePropertyEditor.');
+export function usePropertyEditor(options: { entity: unknown }): {
+  get: (key: string) => unknown;
+  set: (key: string, value: unknown) => void;
+} {
+  const entity = options.entity as Record<string, unknown> | undefined;
+  return {
+    get: (key: string) => entity?.[key],
+    set: (key: string, value: unknown) => {
+      if (entity) entity[key] = value;
+    },
+  };
 }

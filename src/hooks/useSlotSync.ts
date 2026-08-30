@@ -1,13 +1,17 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useSlotSync({slotIndex, pcEntity?}) => {item, setItem} — used by ItemSlot`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useSlotSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useSlotSync is not implemented yet. See docs/API.md § useSlotSync.');
+import { useScript } from './useScript';
+import type { Item } from '../types';
+
+/** Single inventory-slot sync (docs/API.md § useSlotSync) — used by `ItemSlot`. */
+export function useSlotSync<T = unknown>(options: {
+  slotIndex: number;
+  pcEntity?: string;
+}): {
+  item: Item<T> | null;
+  setItem: (item: Item<T> | null) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: `inventorySlot.${options.slotIndex}`,
+  });
+  return { item: (value as Item<T> | null | undefined) ?? null, setItem: (item) => setValue(item) };
 }

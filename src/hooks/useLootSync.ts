@@ -1,13 +1,23 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useLootSync() => {items, take, deposit} — used by LootContainer`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useLootSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useLootSync is not implemented yet. See docs/API.md § useLootSync.');
+import { useScript } from './useScript';
+import type { Item } from '../types';
+
+/** Loot-container sync (docs/API.md § useLootSync) — used by `LootContainer`. */
+export function useLootSync<T = unknown>(
+  options: { pcEntity?: string } = {},
+): {
+  items: Array<Item<T>>;
+  take: (itemId: string) => void;
+  deposit: (item: Item<T>) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'lootItems',
+    initialValue: [] as Array<Item<T>>,
+  });
+  const items = (value as Array<Item<T>> | undefined) ?? [];
+  return {
+    items,
+    take: (itemId) => setValue(items.filter((i) => i.id !== itemId)),
+    deposit: (item) => setValue([...items, item]),
+  };
 }

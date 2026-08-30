@@ -1,13 +1,28 @@
+import * as React from 'react';
+
+import { useScript } from './useScript';
+import type { KeyBinding } from '../types';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useKeybindSync() => {bindings, setBindings, reset} — used by Keybinds`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Structured-array sync for keybindings (docs/API.md § useKeybindSync) — used by
+ * `Keybinds`. Distinct from `useSettingSync`'s scalar-value sync because bindings are
+ * a list, not a single value.
  */
-export function useKeybindSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useKeybindSync is not implemented yet. See docs/API.md § useKeybindSync.');
+export function useKeybindSync(options: { pcEntity?: string } = {}): {
+  bindings: KeyBinding[];
+  setBindings: (bindings: KeyBinding[]) => void;
+  reset: () => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'keybindings',
+    initialValue: [] as KeyBinding[],
+  });
+  const initialRef = React.useRef<KeyBinding[]>((value as KeyBinding[] | undefined) ?? []);
+
+  return {
+    bindings: (value as KeyBinding[] | undefined) ?? [],
+    setBindings: (bindings: KeyBinding[]) => setValue(bindings),
+    reset: () => setValue(initialRef.current),
+  };
 }

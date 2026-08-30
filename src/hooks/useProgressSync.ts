@@ -1,13 +1,14 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useProgressSync() => {value, setValue} — used by Progress`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useProgressSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useProgressSync is not implemented yet. See docs/API.md § useProgressSync.');
+import { useScript } from './useScript';
+
+/** Generic progress-value sync (docs/API.md § useProgressSync) — used by `Progress`. */
+export function useProgressSync(options: { pcEntity?: string } = {}): {
+  value: number;
+  setValue: (value: number) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'progressValue',
+    initialValue: 0,
+  });
+  return { value: (value as number | undefined) ?? 0, setValue: (v: number) => setValue(v) };
 }

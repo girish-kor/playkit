@@ -1,13 +1,21 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `usePuzzleBridge({puzzleId, pcEntity?}) => {state, setState, reset} — used by Puzzle`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function usePuzzleBridge(_options?: Record<string, unknown>): unknown {
-  throw new Error('usePuzzleBridge is not implemented yet. See docs/API.md § usePuzzleBridge.');
+import { useScript } from './useScript';
+
+/** Scene-bound puzzle state sync (docs/API.md § usePuzzleBridge) — used by `Puzzle`. */
+export function usePuzzleBridge<T = unknown>(options: {
+  puzzleId: string;
+  pcEntity?: string;
+}): {
+  state: T | undefined;
+  setState: (state: T) => void;
+  reset: () => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: `puzzleState.${options.puzzleId}`,
+  });
+  return {
+    state: value as T | undefined,
+    setState: (state: T) => setValue(state),
+    reset: () => setValue(undefined),
+  };
 }

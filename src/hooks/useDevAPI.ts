@@ -1,13 +1,16 @@
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useDevAPI({pcApp}) => {inspect(entity), getScene(), ...} — return shape explicitly incomplete in COMPONENTS.md; do not assume members beyond inspect/getScene`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Shared dev-tooling API (docs/API.md § useDevAPI) — the hook behind `DevTools`,
+ * `PerformanceMonitor`, `AssetViewer`. `COMPONENTS.md` documents this return shape
+ * with a literal `...`, i.e. explicitly incomplete — do not assume members beyond
+ * `inspect`/`getScene` without a spec update.
  */
-export function useDevAPI(_options?: Record<string, unknown>): unknown {
-  throw new Error('useDevAPI is not implemented yet. See docs/API.md § useDevAPI.');
+export function useDevAPI(options: { pcApp: unknown }): {
+  inspect: (entity: unknown) => unknown;
+  getScene: () => unknown;
+} {
+  const app = options.pcApp as { scene?: unknown } | undefined;
+  return {
+    inspect: (entity: unknown) => entity,
+    getScene: () => app?.scene ?? null,
+  };
 }

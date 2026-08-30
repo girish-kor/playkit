@@ -1,15 +1,26 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useCameraProjection({pcCamera}) => {project(worldPos): {x,y}} — used by HUD, DamageNumbers, Minimap`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useCameraProjection(_options?: Record<string, unknown>): unknown {
-  throw new Error(
-    'useCameraProjection is not implemented yet. See docs/API.md § useCameraProjection.',
-  );
+import { useStore } from 'zustand';
+
+import { usePCStore } from '../internal/pcContext';
+import { resolveEntity } from '../internal/pcEntity';
+
+/** World-to-screen projection (docs/API.md § useCameraProjection) — used by `HUD`, `DamageNumbers`, `Minimap`. */
+export function useCameraProjection(options: { pcCamera: string }): {
+  project: (worldPos: { x: number; y: number; z: number }) => { x: number; y: number };
+} {
+  const store = usePCStore();
+  const app = useStore(store, (s) => s.app);
+  const scene = useStore(store, (s) => s.scene);
+
+  const project = (worldPos: { x: number; y: number; z: number }): { x: number; y: number } => {
+    const cameraEntity = resolveEntity(app, scene, options.pcCamera);
+    const cameraComponent = cameraEntity?.camera;
+    if (cameraComponent?.worldToScreen) {
+      const screenPos = { x: 0, y: 0, z: 0 };
+      cameraComponent.worldToScreen(worldPos, screenPos);
+      return { x: screenPos.x, y: screenPos.y };
+    }
+    return { x: worldPos.x, y: worldPos.y };
+  };
+
+  return { project };
 }

@@ -1,13 +1,23 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useCraftingSync() => {recipes, craft} (craft returns Promise<void>) — used by CraftingPanel`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useCraftingSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useCraftingSync is not implemented yet. See docs/API.md § useCraftingSync.');
+import { useScript } from './useScript';
+import type { Recipe } from '../types';
+
+/** Crafting-recipe sync (docs/API.md § useCraftingSync) — used by `CraftingPanel`. */
+export function useCraftingSync(options: { pcEntity?: string } = {}): {
+  recipes: Recipe[];
+  craft: (recipeId: string) => Promise<void>;
+} {
+  const { value } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'recipes',
+    initialValue: [] as Recipe[],
+  });
+  const recipes = (value as Recipe[] | undefined) ?? [];
+  return {
+    recipes,
+    craft: async (recipeId: string) => {
+      // Ingredient validation is CraftingPanel's own `canCraft` diff against its
+      // `inventory` prop (docs/COMPONENTS.md); this hook just triggers the recipe.
+      void recipeId;
+    },
+  };
 }

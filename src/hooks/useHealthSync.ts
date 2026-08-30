@@ -1,13 +1,14 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useHealthSync() => {health, setHealth} — used by Health`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useHealthSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useHealthSync is not implemented yet. See docs/API.md § useHealthSync.');
+import { useScript } from './useScript';
+
+/** Bidirectional health sync (docs/API.md § useHealthSync) — used by `Health`. */
+export function useHealthSync(options: { pcEntity?: string } = {}): {
+  health: number;
+  setHealth: (value: number) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'health',
+    initialValue: 1,
+  });
+  return { health: (value as number | undefined) ?? 1, setHealth: (v: number) => setValue(v) };
 }

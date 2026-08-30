@@ -1,13 +1,20 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useInventorySync() => {items, setItems} — used by Inventory`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useInventorySync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useInventorySync is not implemented yet. See docs/API.md § useInventorySync.');
+import { useScript } from './useScript';
+import type { Item } from '../types';
+
+/** Whole-inventory sync (docs/API.md § useInventorySync) — used by `Inventory`. */
+export function useInventorySync<T = unknown>(
+  options: { pcEntity?: string } = {},
+): {
+  items: Array<Item<T> | null>;
+  setItems: (items: Array<Item<T> | null>) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'inventoryItems',
+    initialValue: [] as Array<Item<T> | null>,
+  });
+  return {
+    items: (value as Array<Item<T> | null> | undefined) ?? [],
+    setItems: (items) => setValue(items),
+  };
 }

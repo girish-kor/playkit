@@ -1,13 +1,44 @@
+import { useScript } from './useScript';
+import type { SettingsCategory } from '../types';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useSettingsSync({pcEntity?}) => {settings, setSetting, resetAll} — used by Settings (whole-blob sync)`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Whole-blob settings sync (docs/API.md § useSettingsSync, docs/CONFIGURATION.md) —
+ * used ONLY by the `Settings` container itself; distinct from the per-key
+ * `useSettingSync`.
  */
-export function useSettingsSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useSettingsSync is not implemented yet. See docs/API.md § useSettingsSync.');
+export function useSettingsSync(options: { pcEntity?: string } = {}): {
+  settings: SettingsCategory[];
+  setSetting: (categoryId: string, key: string, value: unknown) => void;
+  resetAll: () => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'settingsBlob',
+    initialValue: [] as SettingsCategory[],
+  });
+  const settings = (value as SettingsCategory[] | undefined) ?? [];
+
+  return {
+    settings,
+    setSetting: (categoryId, key, next) =>
+      setValue(
+        settings.map((category) =>
+          category.id !== categoryId
+            ? category
+            : {
+                ...category,
+                settings: category.settings.map((s) =>
+                  s.key === key ? { ...s, default: next } : s,
+                ),
+              },
+        ),
+      ),
+    resetAll: () =>
+      setValue(
+        settings.map((category) => ({
+          ...category,
+          settings: category.settings.map((s) => ({ ...s, default: s.default })),
+        })),
+      ),
+  };
 }

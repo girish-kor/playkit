@@ -1,13 +1,21 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useObjectiveSync() => {objectives, updateObjective} — used by Objectives`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useObjectiveSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useObjectiveSync is not implemented yet. See docs/API.md § useObjectiveSync.');
+import { useScript } from './useScript';
+import type { Objective } from '../types';
+
+/** Objectives-list sync (docs/API.md § useObjectiveSync) — used by `Objectives`. */
+export function useObjectiveSync(options: { pcEntity?: string } = {}): {
+  objectives: Objective[];
+  updateObjective: (id: string, patch: Partial<Objective>) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'objectives',
+    initialValue: [] as Objective[],
+  });
+  const objectives = (value as Objective[] | undefined) ?? [];
+
+  return {
+    objectives,
+    updateObjective: (id, patch) =>
+      setValue(objectives.map((o) => (o.id === id ? { ...o, ...patch } : o))),
+  };
 }

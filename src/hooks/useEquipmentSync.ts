@@ -1,13 +1,23 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useEquipmentSync() => {equipped, equip, unequip} — used by EquipmentSlots`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useEquipmentSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useEquipmentSync is not implemented yet. See docs/API.md § useEquipmentSync.');
+import { useScript } from './useScript';
+import type { Item } from '../types';
+
+/** Equipped-items sync (docs/API.md § useEquipmentSync) — used by `EquipmentSlots`. */
+export function useEquipmentSync<T = unknown>(
+  options: { pcEntity?: string } = {},
+): {
+  equipped: Record<string, Item<T> | null>;
+  equip: (slotId: string, item: Item<T>) => void;
+  unequip: (slotId: string) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'equipped',
+    initialValue: {} as Record<string, Item<T> | null>,
+  });
+  const equipped = (value as Record<string, Item<T> | null> | undefined) ?? {};
+  return {
+    equipped,
+    equip: (slotId, item) => setValue({ ...equipped, [slotId]: item }),
+    unequip: (slotId) => setValue({ ...equipped, [slotId]: null }),
+  };
 }

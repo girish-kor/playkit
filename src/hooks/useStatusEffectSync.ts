@@ -1,15 +1,22 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useStatusEffectSync() => {effects, removeEffect} — used by StatusEffects`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useStatusEffectSync(_options?: Record<string, unknown>): unknown {
-  throw new Error(
-    'useStatusEffectSync is not implemented yet. See docs/API.md § useStatusEffectSync.',
+import * as React from 'react';
+
+import { useScript } from './useScript';
+import type { StatusEffect } from '../types';
+
+/** Status-effect list sync (docs/API.md § useStatusEffectSync) — used by `StatusEffects`. */
+export function useStatusEffectSync(options: { pcEntity?: string } = {}): {
+  effects: StatusEffect[];
+  removeEffect: (id: string) => void;
+} {
+  const { value, setValue } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'statusEffects',
+    initialValue: [] as StatusEffect[],
+  });
+  const effects = React.useMemo(() => (value as StatusEffect[] | undefined) ?? [], [value]);
+  const removeEffect = React.useCallback(
+    (id: string) => setValue(effects.filter((e) => e.id !== id)),
+    [effects, setValue],
   );
+  return { effects, removeEffect };
 }

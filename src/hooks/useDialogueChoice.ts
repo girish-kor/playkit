@@ -1,13 +1,10 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useDialogueChoice() => {selectChoice} — used by Dialogue`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useDialogueChoice(_options?: Record<string, unknown>): unknown {
-  throw new Error('useDialogueChoice is not implemented yet. See docs/API.md § useDialogueChoice.');
+import { useStore } from 'zustand';
+
+import { usePCStore } from '../internal/pcContext';
+
+/** Fires a scene-side event for the chosen dialogue option (docs/API.md § useDialogueChoice) — used by `Dialogue`. */
+export function useDialogueChoice(): { selectChoice: (choiceId: string) => void } {
+  const store = usePCStore();
+  const app = useStore(store, (s) => s.app);
+  return { selectChoice: (choiceId: string) => app?.fire?.('dialogue:choice', choiceId) };
 }

@@ -1,13 +1,18 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useMinimapSync({pcCamera?, pcEntity?}) => {textureUrl, projectMarker} — used by Minimap`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useMinimapSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useMinimapSync is not implemented yet. See docs/API.md § useMinimapSync.');
+import { useScript } from './useScript';
+
+/** Minimap texture/marker projection sync (docs/API.md § useMinimapSync) — used by `Minimap`. */
+export function useMinimapSync(options: { pcCamera?: string; pcEntity?: string } = {}): {
+  textureUrl: string | undefined;
+  projectMarker: (worldPos: { x: number; y: number; z: number }) => { x: number; y: number };
+} {
+  const { value } = useScript({
+    entityId: options.pcCamera ?? options.pcEntity ?? '',
+    stateKey: 'minimapTextureUrl',
+  });
+  return {
+    textureUrl: value as string | undefined,
+    // Real projection needs the resolved pc.CameraComponent (see useCameraProjection);
+    // this fallback assumes an orthographic top-down camera centered on the origin.
+    projectMarker: (worldPos) => ({ x: worldPos.x, y: worldPos.z }),
+  };
 }
