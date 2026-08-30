@@ -91,8 +91,6 @@ export function Slider({
           max={max}
           step={step}
           orientation={variant === 'vertical' ? 'vertical' : 'horizontal'}
-          aria-label={ariaLabel ?? label}
-          aria-valuetext={ariaValueText}
           onValueChange={([next]) => fireChange(next!)}
           onValueCommit={([next]) => fireCommit(next!)}
           onPointerDown={() => {
@@ -110,7 +108,16 @@ export function Slider({
           <RadixSlider.Track className="bg-gray-700 rounded-full relative grow h-2">
             <RadixSlider.Range className="absolute bg-blue-500 rounded-full h-full" />
           </RadixSlider.Track>
-          <RadixSlider.Thumb className="block w-4 h-4 rounded-full bg-blue-500" />
+          {/* aria-label/aria-valuetext must go on Thumb, not Root -- Root has no ARIA
+              role of its own, and Radix does not forward these down to the thumb
+              (which IS the real role="slider" element a slider can have more than
+              one of, each needing its own accessible name). Putting them on Root
+              left the actual interactive slider with no accessible name at all. */}
+          <RadixSlider.Thumb
+            aria-label={ariaLabel ?? label}
+            aria-valuetext={ariaValueText}
+            className="block w-4 h-4 rounded-full bg-blue-500"
+          />
         </RadixSlider.Root>
         {(showInput || variant === 'with-input') && (
           <Input
