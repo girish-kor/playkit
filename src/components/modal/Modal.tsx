@@ -106,8 +106,19 @@ export function Modal({
     };
   }, [effectiveOpen, preventScroll]);
 
+  // Radix's onEscapeKeyDown/onPointerDownOutside fire with the specific reason,
+  // but Radix *also* calls onOpenChange(false) right after either one as part of its
+  // own dismiss handling -- without this guard, a single Escape press or outside
+  // click would call `onClose` twice (once with the reason, once with none).
+  const closedWithReasonRef = React.useRef(false);
+
   const handleOpenChange = (next: boolean) => {
-    if (!next) onClose();
+    if (next) return;
+    if (closedWithReasonRef.current) {
+      closedWithReasonRef.current = false;
+      return;
+    }
+    onClose();
   };
 
   const content = (
@@ -120,6 +131,7 @@ export function Modal({
           return;
         }
         onEscape?.(e as unknown as KeyboardEvent);
+        closedWithReasonRef.current = true;
         onClose('escape');
       }}
       onPointerDownOutside={(e) => {
@@ -128,6 +140,7 @@ export function Modal({
           return;
         }
         onOverlayClick?.(e as unknown as React.MouseEvent);
+        closedWithReasonRef.current = true;
         onClose('overlay');
       }}
       onFocusOutside={(e) => onFocusOutside?.(e as unknown as FocusEvent)}

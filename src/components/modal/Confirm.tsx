@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { useConfirm } from '../../hooks/useConfirm';
 import { Button, type ButtonProps } from '../primitives/Button';
-import { Text } from '../primitives/Text';
 import { Modal } from './Modal';
 
 /** Yes/No confirmation modal with danger/warning variants (COMPONENTS.md § Component: Confirm). */
@@ -94,8 +93,11 @@ export function Confirm({
       role="alertdialog"
       variant="center"
     >
-      <Text className="text-gray-200 mb-4">{message}</Text>
-      <div className="flex justify-end gap-2">
+      {/* Modal's own `description` prop above already renders `message` (with
+          aria-describedby wired to it, per COMPONENTS.md's Accessibility field) --
+          rendering it a second time here would duplicate the same text as two
+          separate DOM nodes (the same class of bug fixed on Avatar/Health/Minimap). */}
+      <div className="flex justify-end gap-2 mt-4">
         <Button variant="secondary" onPress={handleCancel} disabled={loading}>
           {cancelLabel}
         </Button>
