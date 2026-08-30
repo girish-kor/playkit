@@ -1,24 +1,73 @@
 import * as React from 'react';
 
-/**
- * Scaffold stub — not yet implemented.
- *
- * Authoritative contract: `COMPONENTS.md` § `## Component: ScreenReader` (category: Accessibility).
- * Before implementing, read (in this order): `docs/REBUILD-GUIDE.md`, `COMPONENTS.md`'s
- * full entry for ScreenReader, then `docs/CODING-STANDARDS.md`. Do not invent props/events/
- * defaults here — every field must come from the ScreenReader entry in `COMPONENTS.md`.
- */
+import { useAnnounce } from '../../hooks/useAnnounce';
+import { cn } from '../../internal/cn';
+import { useLatest } from '../../internal/useLatest';
+import { Text } from '../primitives/Text';
+
+/** Screen reader announcements with priority (COMPONENTS.md § Component: ScreenReader). */
+export type ScreenReaderPriority = 'polite' | 'assertive';
+
 export interface ScreenReaderProps {
+  message: string;
+  priority?: ScreenReaderPriority;
+  pcEntity?: string;
+  debounce?: number;
   className?: string;
-  children?: React.ReactNode;
+  onAnnounce?: (data: { message: string; priority: ScreenReaderPriority }) => void;
+  onClear?: () => void;
+  onPriorityChange?: (priority: string) => void;
+  'aria-label'?: string;
 }
 
-export const ScreenReader = React.forwardRef<HTMLElement, ScreenReaderProps>(
-  function ScreenReader(_props, _ref) {
-    throw new Error(
-      'ScreenReader is not implemented yet. See COMPONENTS.md § Component: ScreenReader, and src/components/accessibility/ScreenReader.tsx.',
-    );
+export const ScreenReader = React.forwardRef<HTMLElement, ScreenReaderProps>(function ScreenReader(
+  {
+    message,
+    priority = 'polite',
+    debounce = 100,
+    className,
+    onAnnounce,
+    onClear: _onClear,
+    onPriorityChange,
+    'aria-label': ariaLabel,
   },
-);
+  ref,
+) {
+  const { announce } = useAnnounce({ debounce });
+  const [displayed, setDisplayed] = React.useState('');
+
+  const onAnnounceRef = useLatest(onAnnounce);
+  const prevPriorityRef = React.useRef(priority);
+
+  React.useEffect(() => {
+    if (prevPriorityRef.current !== priority) {
+      prevPriorityRef.current = priority;
+      onPriorityChange?.(priority);
+    }
+  }, [priority, onPriorityChange]);
+
+  React.useEffect(() => {
+    if (!message) return;
+    const timer = setTimeout(() => {
+      setDisplayed(message);
+      announce(message, priority);
+      onAnnounceRef.current?.({ message, priority });
+    }, debounce);
+    return () => clearTimeout(timer);
+  }, [message, priority, debounce, announce, onAnnounceRef]);
+
+  return (
+    <Text
+      ref={ref}
+      as="div"
+      aria-label={ariaLabel}
+      aria-live={priority}
+      aria-atomic="true"
+      className={cn('sr-only', className)}
+    >
+      {displayed}
+    </Text>
+  );
+});
 
 ScreenReader.displayName = 'ScreenReader';

@@ -22,12 +22,12 @@ Module boundaries as verified from `COMPONENTS.md`'s category taxonomy and each 
 - **Error** — ErrorBoundary, ErrorMsg. Depends on Primitives.
 - **Responsive** — Responsive, Touch, OrientationLock. Depends on Primitives.
 - **Accessibility** — A11y, FocusTrap, SkipLink, ScreenReader, LiveRegion. Depends on Primitives. Cross-cutting: `Popover` (Primitives) and `Modal` (Modal module) are documented as using `FocusTrap` when modal focus-trapping is required.
-- **General** — Stepper, Rating, Tag. Depends on Primitives.
+- **General** — Stepper, Rating, Tag. Depends on Primitives. `Stepper`'s `'dots'` variant depends on `Progress` (Feedback module) — verified: `Stepper`'s "Composition" field names `Progress` ("reuses `Progress`'s `segmented` variant").
 - **PlayCanvas Bridge** — PCProvider. Depended on by every other module through the hooks in `src/hooks/` (see `docs/API.md`); PCProvider itself has no dependency on any component module.
 
 ## Dependency direction rule (acyclic)
 
-Primitives → (every other module) → PlayCanvas Bridge (via hooks only, never via direct component import). The only verified same-layer cross-module edges are: HUD→Feedback (`Health`/`Energy` use `Progress`), Modal→Overlay (`Modal` uses `Overlay`), Modal/Primitives→Accessibility (`Modal`/`Popover` use `FocusTrap`), Debug/DevTools→Primitives (`Inspector` uses `TreeView`). No other cross-module edges are documented in `COMPONENTS.md`. Introducing a new cross-module import that is not one of these edges is a boundary violation unless the corresponding component's "Composition" field in `COMPONENTS.md` is first updated to declare it.
+Primitives → (every other module) → PlayCanvas Bridge (via hooks only, never via direct component import). The only verified same-layer cross-module edges are: HUD→Feedback (`Health`/`Energy` use `Progress`), General→Feedback (`Stepper`'s `'dots'` variant uses `Progress`), Modal→Overlay (`Modal` uses `Overlay`), Modal/Primitives→Accessibility (`Modal`/`Popover` use `FocusTrap`), Debug/DevTools→Primitives (`Inspector` uses `TreeView`). No other cross-module edges are documented in `COMPONENTS.md`. Introducing a new cross-module import that is not one of these edges is a boundary violation unless the corresponding component's "Composition" field in `COMPONENTS.md` is first updated to declare it.
 
 ## Inversion of Control / Dependency Injection boundary
 
