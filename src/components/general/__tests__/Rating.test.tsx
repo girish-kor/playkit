@@ -13,7 +13,7 @@ describe('Rating', () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(<Rating value={2} max={5} onChange={onChange} label="Score" showValue />);
-    
+
     expect(screen.getByText('Score')).toBeInTheDocument();
     const radioGroup = screen.getByRole('radiogroup', { name: 'Score' });
     expect(radioGroup).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe('Rating', () => {
     expect(stars).toHaveLength(5);
     expect(stars[1]).toHaveAttribute('aria-checked', 'true');
 
-    await user.click(stars[3]);
+    await user.click(stars[3]!); // non-null assertion – safe because length is 5
     expect(onChange).toHaveBeenCalledWith(4);
     expect(screen.getByText('2')).toBeInTheDocument();
   });
@@ -33,7 +33,7 @@ describe('Rating', () => {
     render(<Rating value={1} max={3} onChange={() => {}} onHover={onHover} />);
     const stars = screen.getAllByRole('radio');
 
-    await user.hover(stars[2]);
+    await user.hover(stars[2]!); // non-null assertion – safe because length is 3
     expect(onHover).toHaveBeenCalledWith(3);
 
     const radioGroup = screen.getByRole('radiogroup');

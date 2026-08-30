@@ -5,8 +5,8 @@ import { Editor } from '../Editor';
 import type { Prefab } from '../../../types';
 
 const mockPalette: Prefab[] = [
-  { id: '1', name: 'Tree', category: 'Nature' },
-  { id: '2', name: 'Rock', category: 'Nature' },
+  { id: '1', name: 'Tree', category: 'Nature', data: undefined },
+  { id: '2', name: 'Rock', category: 'Nature', data: undefined },
 ];
 
 describe('Editor', () => {

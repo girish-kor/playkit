@@ -5,9 +5,9 @@ import { Palette } from '../Palette';
 import type { Prefab } from '../../../types';
 
 const mockPrefabs: Prefab[] = [
-  { id: 'p1', name: 'Oak Tree', category: 'Nature' },
-  { id: 'p2', name: 'Granite Rock', category: 'Nature' },
-  { id: 'p3', name: 'Wooden Chest', category: 'Props' },
+  { id: 'p1', name: 'Oak Tree', category: 'Nature', data: {} },
+  { id: 'p2', name: 'Granite Rock', category: 'Nature', data: {} },
+  { id: 'p3', name: 'Wooden Chest', category: 'Props', data: {} },
 ];
 
 const mockCategories = ['Nature', 'Props'];
