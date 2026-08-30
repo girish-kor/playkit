@@ -32,6 +32,7 @@ function renderItems(
   items: ContextMenuItemData[],
   onSelect: (item: ContextMenuItemData) => void,
   renderItem: ((item: ContextMenuItemData) => React.ReactNode) | undefined,
+  closeOnSelect: boolean,
 ): React.ReactNode {
   return items.map((item) => {
     if (item.separator)
@@ -50,7 +51,7 @@ function renderItems(
           </RadixDropdownMenu.SubTrigger>
           <RadixDropdownMenu.Portal>
             <RadixDropdownMenu.SubContent className="bg-gray-800 border rounded-md shadow-lg min-w-48">
-              {renderItems(item.children, onSelect, renderItem)}
+              {renderItems(item.children, onSelect, renderItem, closeOnSelect)}
             </RadixDropdownMenu.SubContent>
           </RadixDropdownMenu.Portal>
         </RadixDropdownMenu.Sub>
@@ -61,7 +62,14 @@ function renderItems(
       <RadixDropdownMenu.Item
         key={item.id}
         disabled={item.disabled}
-        onSelect={() => onSelect(item)}
+        onSelect={(e) => {
+          // Radix's Item closes the menu on select by default, regardless of our own
+          // `closeOnSelect` prop -- preventDefault() is Radix's own documented escape
+          // hatch to keep it open (COMPONENTS.md: "closeOnSelect?: boolean -- Close
+          // after an item is selected (default: true)").
+          if (!closeOnSelect) e.preventDefault();
+          onSelect(item);
+        }}
         className="px-4 py-2 hover:bg-gray-700 flex justify-between gap-4"
       >
         {renderItem ? (
@@ -129,7 +137,7 @@ export function DropdownMenu({
           onEscapeKeyDown={() => onClose?.('escape')}
           onPointerDownOutside={() => onClose?.('outside')}
         >
-          {renderItems(items, handleSelect, renderItem)}
+          {renderItems(items, handleSelect, renderItem, closeOnSelect)}
         </RadixDropdownMenu.Content>
       </RadixDropdownMenu.Portal>
     </RadixDropdownMenu.Root>
