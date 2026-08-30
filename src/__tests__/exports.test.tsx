@@ -205,7 +205,9 @@ const ALL_HOOKS = [
 
 describe('package entry point (src/index.ts)', () => {
   it.each(ALL_COMPONENTS)('exports %s', (name) => {
-    expect(typeof (Library as Record<string, unknown>)[name]).toBe('object'); // React.forwardRef result
+    // A component is either a plain function or a React.forwardRef object (only
+    // components with a documented `ref` prop use forwardRef -- docs/CODING-STANDARDS.md).
+    expect(['function', 'object']).toContain(typeof (Library as Record<string, unknown>)[name]);
   });
 
   it.each(ALL_HOOKS)('exports %s', (name) => {
@@ -229,6 +231,6 @@ describe('package entry point (src/index.ts)', () => {
 
 describe('devtools entry point (src/devtools.ts)', () => {
   it.each(DEVTOOLS_COMPONENTS)('exports %s', (name) => {
-    expect(typeof (DevTools as Record<string, unknown>)[name]).toBe('object');
+    expect(['function', 'object']).toContain(typeof (DevTools as Record<string, unknown>)[name]);
   });
 });

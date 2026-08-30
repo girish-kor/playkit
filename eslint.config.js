@@ -40,6 +40,15 @@ export default tseslint.config(
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      // This library's entire purpose (docs/ARCHITECTURE.md's "PlayCanvas Bridge
+      // layer") is reading an imperative external engine's CURRENT state on mount and
+      // subscribing to its changes -- exactly the "sync to an external system" case
+      // react-hooks/set-state-in-effect's underlying react.dev guidance carves out as
+      // legitimate, but the rule itself can't distinguish that from the prop-derived-
+      // state anti-pattern it targets. Kept as a warning (not off) so a genuinely
+      // avoidable case still gets flagged for review.
+      'react-hooks/set-state-in-effect': 'warn',
+
       // Class assembly must go through clsx + tailwind-merge, never raw concatenation
       // (docs/DESIGN-SYSTEM.md) -- caught in review, not lint, but keep template-string
       // className concatenation visible as a warning.
