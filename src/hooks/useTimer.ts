@@ -54,6 +54,13 @@ export function useTimer(options: UseTimerOptions): UseTimerResult {
     if (!isRunning || isPaused || isFinished) return;
     let rafId: number;
     let last = performance.now();
+    // React's state updates from inside this rAF loop don't take effect (and this
+    // effect doesn't re-run to cancel the loop) until the next render is committed --
+    // with fake timers advancing many frames synchronously, that gap otherwise lets
+    // the countdown-finished branch below fire on every remaining frame instead of
+    // exactly once. Track completion locally so the loop stops scheduling itself the
+    // instant it finishes, independent of when React gets around to re-rendering.
+    let finished = false;
 
     const tick = (now: number) => {
       const deltaSeconds = ((now - last) / 1000) * timeDilation;
@@ -62,7 +69,8 @@ export function useTimer(options: UseTimerOptions): UseTimerResult {
       setTime((prev) => {
         const next = isCountdown ? Math.max(0, prev - deltaSeconds) : prev + deltaSeconds;
         onTickRef.current?.(next);
-        if (isCountdown && next <= 0) {
+        if (isCountdown && next <= 0 && !finished) {
+          finished = true;
           setIsFinished(true);
           setIsRunning(false);
           onFinishRef.current?.();
@@ -70,7 +78,7 @@ export function useTimer(options: UseTimerOptions): UseTimerResult {
         return next;
       });
 
-      rafId = requestAnimationFrame(tick);
+      if (!finished) rafId = requestAnimationFrame(tick);
     };
 
     rafId = requestAnimationFrame(tick);

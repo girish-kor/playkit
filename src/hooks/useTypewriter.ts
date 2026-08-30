@@ -16,7 +16,13 @@ export function useTypewriter(options: UseTypewriterOptions): {
   skip: () => void;
 } {
   const { text, speed = 30, autoStart = true } = options;
-  const [displayedCount, setDisplayedCount] = React.useState(autoStart ? 0 : text.length);
+  // Always start at 0, regardless of `autoStart` -- the mount effect below resets
+  // `displayedCount` to 0 on every `text` change (including the initial mount) to
+  // support re-triggering the effect for a new line of dialogue, so an
+  // `autoStart`-conditional initial count here would only ever survive a single paint
+  // before that effect overwrote it back to 0 anyway (a visible full-text-then-blank
+  // flash for `autoStart: false`). `running` alone reflects `autoStart`.
+  const [displayedCount, setDisplayedCount] = React.useState(0);
   const [running, setRunning] = React.useState(autoStart);
 
   React.useEffect(() => {

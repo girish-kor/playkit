@@ -117,7 +117,7 @@ export function SliderPuzzle({
     const next = [...tiles];
     [next[tileIndex], next[emptyIndex]] = [next[emptyIndex]!, next[tileIndex]!];
     setTiles(next);
-    if (pcEntity) synced.move(tileIndex);
+    if (pcEntity) synced.move(tileIndex, emptyIndex);
     setMoves((m) => {
       const nm = m + 1;
       onMovesChange?.(nm);

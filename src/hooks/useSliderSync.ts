@@ -1,9 +1,14 @@
 import { useScript } from './useScript';
 
-/** Sliding-tile-board sync (docs/API.md § useSliderSync) — used by `SliderPuzzle`. */
+/**
+ * Sliding-tile-board sync (COMPONENTS.md § Hook: useSliderSync -- "Returns:
+ * `{ tiles: number[], move: (from: number, to: number) => void }`") -- used by
+ * `SliderPuzzle`. `move` swaps the tiles at the two given indices and persists the
+ * result; `SliderPuzzle` itself decides which two indices form a valid move.
+ */
 export function useSliderSync(options: { pcEntity?: string } = {}): {
   tiles: number[];
-  move: (index: number) => void;
+  move: (from: number, to: number) => void;
 } {
   const { value, setValue } = useScript({
     entityId: options.pcEntity ?? '',
@@ -13,11 +18,11 @@ export function useSliderSync(options: { pcEntity?: string } = {}): {
   const tiles = (value as number[] | undefined) ?? [];
   return {
     tiles,
-    move: (index: number) => {
-      // The board's own move-validity logic lives in the SliderPuzzle component
-      // (docs/COMPONENTS.md); this hook only persists whatever tile order it's given.
-      setValue(tiles);
-      void index;
+    move: (from: number, to: number) => {
+      if (tiles[from] === undefined || tiles[to] === undefined) return;
+      const next = [...tiles];
+      [next[from], next[to]] = [next[to]!, next[from]!];
+      setValue(next);
     },
   };
 }

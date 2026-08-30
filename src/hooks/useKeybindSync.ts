@@ -18,11 +18,24 @@ export function useKeybindSync(options: { pcEntity?: string } = {}): {
     stateKey: 'keybindings',
     initialValue: [] as KeyBinding[],
   });
-  const initialRef = React.useRef<KeyBinding[]>((value as KeyBinding[] | undefined) ?? []);
+  const bindings = (value as KeyBinding[] | undefined) ?? [];
+
+  // `useScript`'s entity/script resolution happens in an effect, one render after
+  // mount -- capturing `initialRef` via `useRef(value)` would freeze it at `[]` (the
+  // placeholder `initialValue`) on that first render, before the real bindings ever
+  // arrive, making `reset()` wipe the bindings instead of restoring them. Capture it
+  // from an effect instead (never write a ref during render -- react-hooks/refs),
+  // re-checking each time `bindings` changes until the first real value shows up.
+  const initialRef = React.useRef<KeyBinding[] | null>(null);
+  React.useEffect(() => {
+    if (initialRef.current === null && bindings.length > 0) {
+      initialRef.current = bindings;
+    }
+  }, [bindings]);
 
   return {
-    bindings: (value as KeyBinding[] | undefined) ?? [],
-    setBindings: (bindings: KeyBinding[]) => setValue(bindings),
-    reset: () => setValue(initialRef.current),
+    bindings,
+    setBindings: (next: KeyBinding[]) => setValue(next),
+    reset: () => setValue(initialRef.current ?? []),
   };
 }
