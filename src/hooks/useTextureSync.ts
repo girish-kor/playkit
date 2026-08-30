@@ -1,13 +1,21 @@
+import * as React from 'react';
+
+import { useScript } from './useScript';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useTextureSync() => {setTexture, isLoaded} — used by Image`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Sets a PlayCanvas material/texture from an `Image`'s `src` (docs/API.md §
+ * useTextureSync). `isLoaded` reflects whether the write has round-tripped through the
+ * (debounced) sync, not whether the browser has decoded the image itself — `Image`
+ * tracks its own DOM `onLoad` separately for that.
  */
-export function useTextureSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useTextureSync is not implemented yet. See docs/API.md § useTextureSync.');
+export function useTextureSync(options: { pcEntity?: string } = {}): {
+  setTexture: (src: string) => void;
+  isLoaded: boolean;
+} {
+  const { setValue, isSynced } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'texture',
+  });
+  const setTexture = React.useCallback((src: string) => setValue(src), [setValue]);
+  return { setTexture, isLoaded: isSynced };
 }

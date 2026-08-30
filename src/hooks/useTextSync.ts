@@ -1,13 +1,9 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useTextSync() => {setText} — used by Text`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useTextSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useTextSync is not implemented yet. See docs/API.md § useTextSync.');
+import { useScript } from './useScript';
+
+/** Syncs text content to a PlayCanvas TextComponent (docs/API.md § useTextSync). */
+export function useTextSync(options: { pcEntity?: string } = {}): {
+  setText: (text: string) => void;
+} {
+  const { setValue } = useScript({ entityId: options.pcEntity ?? '', stateKey: 'text' });
+  return { setText: (text: string) => setValue(text) };
 }

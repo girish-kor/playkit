@@ -1,13 +1,39 @@
+import * as React from 'react';
+
+import { useScript } from './useScript';
+
 /**
- * Scaffold stub — not yet implemented.
+ * The canonical per-setting sync mechanism (docs/CONFIGURATION.md): syncs ONE setting
+ * value, keyed by `key`. Used by `Toggle`, `Slider`, `Select`, `RadioGroup`,
+ * `ColorPicker`, `AccessibilitySlider`, `Rating`. Distinct from `useSettingsSync`,
+ * which syncs the entire settings-categories blob for the `Settings` container itself.
  *
- * Documented signature (verbatim from `docs/API.md`):
- * `useSettingSync({key, pcEntity?, defaultValue?}) => {value, setValue} — used by Toggle, Slider, Select, RadioGroup, ColorPicker, AccessibilitySlider, Rating`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Without `pcEntity`, this is purely local React state seeded by `defaultValue` — a
+ * setting doesn't have to be bound to a PlayCanvas entity to exist.
  */
-export function useSettingSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useSettingSync is not implemented yet. See docs/API.md § useSettingSync.');
+export interface UseSettingSyncOptions {
+  key: string;
+  pcEntity?: string;
+  defaultValue?: unknown;
+}
+
+export interface UseSettingSyncResult {
+  value: unknown;
+  setValue: (v: unknown) => void;
+}
+
+export function useSettingSync(options: UseSettingSyncOptions): UseSettingSyncResult {
+  const { key, pcEntity, defaultValue } = options;
+
+  const [localValue, setLocalValue] = React.useState(defaultValue);
+  const script = useScript({
+    entityId: pcEntity ?? '',
+    stateKey: key,
+    initialValue: defaultValue,
+  });
+
+  if (!pcEntity) {
+    return { value: localValue, setValue: setLocalValue };
+  }
+  return { value: script.value, setValue: script.setValue };
 }

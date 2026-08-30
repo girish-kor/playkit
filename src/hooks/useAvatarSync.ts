@@ -1,13 +1,14 @@
-/**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useAvatarSync() => {src, status} — used by Avatar`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
- */
-export function useAvatarSync(_options?: Record<string, unknown>): unknown {
-  throw new Error('useAvatarSync is not implemented yet. See docs/API.md § useAvatarSync.');
+import { useScript } from './useScript';
+
+/** Reads a live portrait/status pair from PlayCanvas (docs/API.md § useAvatarSync). */
+export function useAvatarSync(options: { pcEntity?: string } = {}): {
+  src: string | undefined;
+  status: string | undefined;
+} {
+  const { value: src } = useScript({ entityId: options.pcEntity ?? '', stateKey: 'avatarSrc' });
+  const { value: status } = useScript({
+    entityId: options.pcEntity ?? '',
+    stateKey: 'avatarStatus',
+  });
+  return { src: src as string | undefined, status: status as string | undefined };
 }

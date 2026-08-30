@@ -1,13 +1,27 @@
+import { useStore } from 'zustand';
+
+import { usePCStore } from '../internal/pcContext';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useTouchBridge() => {sendTouchStart, sendTouchMove, sendTouchEnd} — used by Touch, Joystick`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Forwards touch-driven movement into the PlayCanvas app (docs/API.md §
+ * useTouchBridge) — used by `Touch`, `Joystick`. Fires a custom `touch:start` /
+ * `touch:move` / `touch:end` event on the app (mirroring `useEvent`'s
+ * `entity.fire(event)` convention) rather than a specific `pc.TouchDevice` API, since
+ * neither `Touch` nor `Joystick` binds to one particular entity.
  */
-export function useTouchBridge(_options?: Record<string, unknown>): unknown {
-  throw new Error('useTouchBridge is not implemented yet. See docs/API.md § useTouchBridge.');
+export interface UseTouchBridgeResult {
+  sendTouchStart: (data: { x: number; y: number; id?: string | number }) => void;
+  sendTouchMove: (data: { x: number; y: number; id?: string | number }) => void;
+  sendTouchEnd: (data: { id?: string | number }) => void;
+}
+
+export function useTouchBridge(): UseTouchBridgeResult {
+  const store = usePCStore();
+  const app = useStore(store, (s) => s.app);
+
+  return {
+    sendTouchStart: (data) => app?.fire?.('touch:start', data),
+    sendTouchMove: (data) => app?.fire?.('touch:move', data),
+    sendTouchEnd: (data) => app?.fire?.('touch:end', data),
+  };
 }

@@ -1,13 +1,27 @@
+import * as React from 'react';
+
 /**
- * Scaffold stub — not yet implemented.
- *
- * Documented signature (verbatim from `docs/API.md`):
- * `useScrollToBottom({containerRef, dependencies?, smooth?}) => {scrollToBottom} — used by ScrollArea, History`
- *
- * Do not invent option/return fields beyond what's shown above without a spec update
- * (see `docs/API.md`, `docs/DATA-MODELS.md`). PlayCanvas-bridge hooks must never throw
- * from normal (unresolved-id) operation once implemented — see `docs/ERROR-HANDLING.md`.
+ * Scrolls a container to its bottom, optionally re-running when `dependencies` change
+ * (docs/API.md § useScrollToBottom) — used by `ScrollArea`, `History`.
  */
-export function useScrollToBottom(_options?: Record<string, unknown>): unknown {
-  throw new Error('useScrollToBottom is not implemented yet. See docs/API.md § useScrollToBottom.');
+export interface UseScrollToBottomOptions {
+  containerRef: React.RefObject<HTMLElement | null>;
+  dependencies?: unknown[];
+  smooth?: boolean;
+}
+
+export interface UseScrollToBottomResult {
+  scrollToBottom: () => void;
+}
+
+export function useScrollToBottom(options: UseScrollToBottomOptions): UseScrollToBottomResult {
+  const { containerRef, smooth = false } = options;
+
+  const scrollToBottom = React.useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: smooth ? 'smooth' : 'auto' });
+  }, [containerRef, smooth]);
+
+  return { scrollToBottom };
 }
