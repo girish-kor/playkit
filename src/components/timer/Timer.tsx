@@ -148,8 +148,10 @@ export function Timer({
         </Text>
       )}
       <div className="sr-only">
-        <button type="button" onClick={timer.isRunning ? pause : resume}>
-          {timer.isRunning ? 'Pause' : 'Resume'}
+        {/* useTimer's `isRunning` stays true across a pause (it only reflects
+            "started at all"); the actual paused/running toggle is `isPaused`. */}
+        <button type="button" onClick={timer.isPaused ? resume : pause}>
+          {timer.isPaused ? 'Resume' : 'Pause'}
         </button>
         <button type="button" onClick={reset}>
           Reset

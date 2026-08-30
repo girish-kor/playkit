@@ -28,4 +28,12 @@ if (typeof Element !== 'undefined') {
   if (!Element.prototype.scrollIntoView) {
     Element.prototype.scrollIntoView = () => {};
   }
+  // jsdom does not implement Element.scrollTo/scrollBy either -- used by
+  // ScrollArea's imperative handle and useScrollToBottom (History, autoScroll).
+  if (!Element.prototype.scrollTo) {
+    Element.prototype.scrollTo = () => {};
+  }
+  if (!Element.prototype.scrollBy) {
+    Element.prototype.scrollBy = () => {};
+  }
 }
